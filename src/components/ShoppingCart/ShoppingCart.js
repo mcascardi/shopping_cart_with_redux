@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { toggleCart } from '../../ducks/shopping.ducks';
+import { toggleCart, removeFromCart } from '../../ducks/shopping.ducks';
 import styles from './ShoppingCart.module.css';
 
 const ShoppingCart = () => {
@@ -31,7 +31,7 @@ const ShoppingCart = () => {
                         <small>${item.price}</small>
                     </div>
 
-                    <button>Remove</button>
+                    <button onClick={() => dispatch(removeFromCart(item.id))}>Remove</button>
                 </div>
             ))}
             <h2>Total: ${total.toFixed(2)}</h2>
