@@ -29,20 +29,34 @@ export const removeFromCart = (id) => {
 const addToCartReducer = (state = { isOpen: false, items: [] }, action) => {
     const { payload, type } = action;
     switch (type) {
-        case TOGGLE_CART:
-            return {
-                ...state,
-                isOpen: payload,
-            };
-        case ADD_TO_CART:
-            return {
-                ...state,
-                isOpen: true,
-                items: [...state.items, payload],
-            };
+    case TOGGLE_CART:
+        return {
+            ...state,
+            isOpen: payload,
+        };
+    case ADD_TO_CART:
+        // Warning: Encountered two children with the same key, `2`
+        return {
+            ...state,
+            isOpen: true,
+            items: [...state.items, payload],
+        };
 
-        default:
-            return state;
+    case REMOVE_FROM_CART:
+        // we expect payload to be the item's ID that we want to remove in this case
+        for (const itemId in state.items) {
+            // console.dir(itemId);
+            if (state.items[itemId].id == payload) {
+                let newItems  = state.items;
+                newItems.splice(itemId, 1);
+                return {
+                    ...state,
+                    items: newItems
+                };
+            }
+        }
+    default:
+        return state;
     }
 };
 
