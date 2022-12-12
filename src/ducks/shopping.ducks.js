@@ -2,6 +2,15 @@
 const ADD_TO_CART = 'ADD_TO_CART';
 const REMOVE_FROM_CART = 'REMOVE_FROM_CART';
 const TOGGLE_CART = 'TOGGLE_CART';
+const CHANGE_QTY = 'CHANGE_QTY';
+
+// CHANGE QUANTITY
+export const changeQty = (itemId, increment=true) => {
+    return {
+        type: CHANGE_QTY,
+        payload: {id: itemId, increment: increment}
+    };
+};
 
 // ACTION CREATORS
 export const addToCart = (item) => {
@@ -27,15 +36,30 @@ export const removeFromCart = (id) => {
 
 // REDUCERS
 const addToCartReducer = (state = { isOpen: false, items: [] }, action) => {
-    const { payload, type } = action;
+    const { payload,
+            type } = action;
+    let newItems  = state.items;
     switch (type) {
+    case CHANGE_QTY:
+        const itemIndex = newItems.findIndex(item => item.id === payload.id);
+        if (payload.increment) {
+            newItems[itemIndex].qty += 1;
+        } else if (payload.increment === false &&  newItems[itemIndex].qty > 1 ) {
+            newItems[itemIndex].qty -=1;
+        }
+        return {
+            ...state,
+            items: newItems,
+        };
+
     case TOGGLE_CART:
         return {
             ...state,
             isOpen: payload,
         };
+
     case ADD_TO_CART:
-        // Warning: Encountered two children with the same key, `2`
+        payload.qty = 1;
         return {
             ...state,
             isOpen: true,
@@ -43,11 +67,11 @@ const addToCartReducer = (state = { isOpen: false, items: [] }, action) => {
         };
 
     case REMOVE_FROM_CART:
+        removeFromCart(state);
         // we expect payload to be the item's ID that we want to remove in this case
         for (const itemId in state.items) {
             // console.dir(itemId);
-            if (state.items[itemId].id == payload) {
-                let newItems  = state.items;
+            if (state.items[itemId].id === payload) {
                 newItems.splice(itemId, 1);
                 return {
                     ...state,
@@ -55,6 +79,7 @@ const addToCartReducer = (state = { isOpen: false, items: [] }, action) => {
                 };
             }
         }
+
     default:
         return state;
     }
